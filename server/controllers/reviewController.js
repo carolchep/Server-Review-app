@@ -1,11 +1,19 @@
 import reviewModel from "../models/review.js";
-
+import Joi from "joi";
 
 export const createReview = async (req, res) => {
+try {
+    const schema = Joi.object({
+      title: Joi.string().min(3).max(300).required(),
 
-    const newReview = new reviewModel(req.body);
+    });
 
-    try {
+    const { error } = schema.validate(req.body);
+
+    if (error) return res.status(400).send(error.details[0].message);
+    const { title } = req.body;
+    const newReview = new reviewModel({title});
+
 
         await newReview.save();
         res.status(200).json(newReview);
